@@ -1,10 +1,9 @@
-# 🐟 ProyectFish
+ProyectFish
 
 Prototipo web (Django) para que pescadores y recolectores revisen **si una zona de agua
-está contaminada antes de ir a pescar**. Equipo 5, “La sociedad de los poetas vivos”,
-IWG400 – Proyecto Inicial.
+está contaminada antes de ir a pescar**. Equipo 5, “La sociedad de los poetas vivos”
 
-> ⚠️ Por ahora la aplicación **solo tiene datos de Santiago (Región Metropolitana)**.
+Por ahora la aplicación *solo tiene datos de Santiago (Región Metropolitana)*.
 > Si se busca otro lugar, la página avisa que todavía no hay información.
 > Los estados y fechas de las zonas son **datos de ejemplo**, no información oficial.
 
@@ -12,10 +11,10 @@ IWG400 – Proyecto Inicial.
 
 | Funcionalidad | Descripción |
 |---|---|
-| 📍 ¿Dónde estás? | La primera vez se pregunta dónde está la persona: con la ubicación del teléfono, eligiendo su comuna o viendo todo Santiago. Si la ubicación o el lugar escrito está fuera de Santiago, se avisa que todavía no hay información. |
-| ⭐ **Mapa (funcionalidad corazón)** | Mapa de Santiago con una marca de color por zona: ✅ verde se puede pescar, ⚠️ amarillo con cuidado, ❌ rojo no pescar. Al tocar una zona se ve un cartel grande con el resultado, el tipo de contaminación, la fecha de la última revisión (con cuántos días hace), las zonas seguras más cercanas. El borde de Santiago se marca con una línea punteada; tocar fuera muestra “Aún no tenemos información”. |
-| 🔍 Búsqueda | Se escribe una comuna o un lugar (ej: `Paine`, `Laguna Carén`, `Santiago`). Si el lugar no es de Santiago (ej: `Valparaíso`) aparece el aviso “Todavía no tenemos información”. |
-| 💬 **Comentarios (funcionalidad secundaria)** | En 3 pasos con dibujos: ¿qué viste? (agua de color raro, aceite, espuma, peces muertos, basura, todo bien), ¿dónde? y tu nombre (el texto es opcional). Se ven en la pantalla Comentarios y en el detalle de cada zona. |
+|  ¿Dónde estás? | La primera vez se pregunta dónde está la persona: con la ubicación del teléfono, eligiendo su comuna o viendo todo Santiago. Si la ubicación o el lugar escrito está fuera de Santiago, se avisa que todavía no hay información. |
+|  **Mapa (funcionalidad corazón)** | Mapa de Santiago con una marca de color por zona: ✅ verde se puede pescar, ⚠️ amarillo con cuidado, ❌ rojo no pescar. Al tocar una zona se ve un cartel grande con el resultado, el tipo de contaminación, la fecha de la última revisión (con cuántos días hace), las zonas seguras más cercanas. El borde de Santiago se marca con una línea punteada; tocar fuera muestra “Aún no tenemos información”. |
+|  Búsqueda | Se escribe una comuna o un lugar (ej: `Paine`, `Laguna Carén`, `Santiago`). Si el lugar no es de Santiago (ej: `Valparaíso`) aparece el aviso “Todavía no tenemos información”. |
+|  **Comentarios (funcionalidad secundaria)** | En 3 pasos con dibujos: ¿qué viste? (agua de color raro, aceite, espuma, peces muertos, basura, todo bien), ¿dónde? y tu nombre (el texto es opcional). Se ven en la pantalla Comentarios y en el detalle de cada zona. |
 
 Al final de cada página se avisa que es un prototipo / demo.
 

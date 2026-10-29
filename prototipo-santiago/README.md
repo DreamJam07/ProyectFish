@@ -7,7 +7,7 @@ Por ahora la aplicación *solo tiene datos de Santiago (Región Metropolitana)*.
 > Si se busca otro lugar, la página avisa que todavía no hay información.
 > Los estados y fechas de las zonas son **datos de ejemplo**, no información oficial.
 
-## Qué hace
+## ¿Qué hace?
 
 | Funcionalidad | Descripción |
 |---|---|

@@ -1,0 +1,11 @@
+{% load iconos %}
+<article class="aviso">
+  {% icono c.dibujo 44 c.nivel %}
+  <span style="flex:1">
+    <span class="quien">{{ c.nombre }}</span>
+    <span class="cuando">· {{ c.fecha|hace }}</span><br>
+    <span class="que t-{{ c.nivel }}">{{ c.get_tipo_display }}</span>
+    {% if mostrar_zona %}<span class="cuando">· <a href="{% url 'mapa:zona' c.zona.pk %}#detalle">{{ c.zona.nombre }}</a></span>{% endif %}
+    {% if c.texto %}<p>{{ c.texto|linebreaksbr }}</p>{% endif %}
+  </span>
+</article>

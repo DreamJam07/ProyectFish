@@ -1,0 +1,36 @@
+{% load iconos %}
+<div class="tarjeta">
+  <div class="dibujo">
+    <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="52" fill="var(--marca-suave)"/>
+      <circle cx="60" cy="52" r="26" fill="none" stroke="var(--marca)" stroke-width="5"/>
+      <path d="M60 96s26-24 26-42a26 26 0 10-52 0c0 18 26 42 26 42z" fill="none" stroke="var(--marca)" stroke-width="5" stroke-linejoin="round"/>
+      <circle cx="60" cy="52" r="9" fill="var(--marca)"/>
+    </svg>
+  </div>
+  <h2>¿Dónde estás?</h2>
+  <p>Así te mostramos primero las zonas de agua que tienes más cerca.</p>
+
+  <form method="post" action="{% url 'mapa:lugar' %}" id="form-gps">
+    {% csrf_token %}
+    <input type="hidden" name="lat"><input type="hidden" name="lon">
+    <button type="button" class="opcion-grande principal" id="btn-gps">
+      {% icono "check" 40 %}
+      <span>Usar mi ubicación<small>El teléfono la busca solo</small></span>
+    </button>
+  </form>
+  <p id="buscando" hidden style="margin-top:12px; font-weight:700">Buscando dónde estás…</p>
+
+  <a class="opcion-grande" href="{% url 'mapa:lugar' %}#comunas">
+    {% icono "mapa" 40 %}
+    <span>Yo elijo mi comuna<small>De una lista, o escribiendo el nombre</small></span>
+  </a>
+
+  <form method="post" action="{% url 'mapa:lugar' %}">
+    {% csrf_token %}
+    <button type="submit" name="todo" value="1" class="opcion-grande">
+      {% icono "cerro" 40 "marca" %}
+      <span>Ver todo Santiago<small>Sin elegir un lugar</small></span>
+    </button>
+  </form>
+</div>

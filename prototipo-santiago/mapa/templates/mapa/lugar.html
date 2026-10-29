@@ -1,0 +1,50 @@
+{% extends "mapa/base.html" %}
+{% load iconos %}
+{% block titulo %}¿Dónde estás? · ProyectFish{% endblock %}
+
+{% block contenido %}
+<div class="telon en-pagina">
+  <div class="tarjeta">
+    {% if aviso %}
+      <div class="alerta" role="alert">
+        {% icono "ojo" 40 "ojo" %}
+        <span>
+          {% if aviso.tipo == "fuera_gps" %}
+            <b>Estás fuera de Santiago.</b>
+            <p>Aún no tenemos información de ese lugar. Por ahora solo hay datos de Santiago (Región Metropolitana). Elige una comuna de la lista.</p>
+          {% elif aviso.tipo == "comuna_sin_datos" %}
+            <b>{{ texto }} es parte de Santiago, pero aún no tiene zonas revisadas.</b>
+            <p>Elige una comuna cercana de la lista, o mira todo Santiago.</p>
+          {% else %}
+            <b>Todavía no tenemos información de “{{ texto }}”.</b>
+            <p>Por ahora solo hay datos de Santiago (Región Metropolitana). Pronto agregaremos más lugares.</p>
+          {% endif %}
+        </span>
+      </div>
+    {% endif %}
+
+    {% include "mapa/_elegir_lugar.html" %}
+
+    <h2 class="rotulo-seccion" id="comunas" style="justify-content:center">{% icono "lupa" 26 %} Escribe tu comuna</h2>
+    <form class="buscador" method="get" action="{% url 'mapa:lugar' %}">
+      <input name="q" type="text" value="{{ texto }}" aria-label="Comuna o lugar" placeholder="Ej: Paine">
+      <button type="submit">{% icono "lupa" 24 %}<span>Buscar</span></button>
+    </form>
+
+    <h2 class="rotulo-seccion" style="justify-content:center">{% icono "mapa" 26 %} O toca tu comuna</h2>
+    <form method="post" action="{% url 'mapa:lugar' %}">
+      {% csrf_token %}
+      {% for c in comunas %}
+        <button type="submit" name="comuna" value="{{ c.nombre }}" class="opcion-grande">
+          {% icono "pin" 36 "marca" %}
+          <span>{{ c.nombre }}<small>{{ c.zonas }} zona{{ c.zonas|pluralize }} de agua revisada{{ c.zonas|pluralize }}</small></span>
+        </button>
+      {% endfor %}
+    </form>
+
+    {% if not elegir_lugar %}
+      <a class="opcion-grande" href="{% url 'mapa:inicio' %}" style="margin-top:22px">{% icono "atras" 34 %}<span>Volver</span></a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

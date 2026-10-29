@@ -1,0 +1,57 @@
+{% extends "mapa/base.html" %}
+{% load iconos %}
+{% block titulo %}Comentarios · ProyectFish{% endblock %}
+
+{% block contenido %}
+<div class="vista-comentarios">
+  <form method="post" action="{% url 'mapa:comentarios' %}" novalidate>
+    {% csrf_token %}
+    <h2 class="rotulo-seccion"><span class="paso-num">1</span> ¿Qué viste en el agua?</h2>
+    <div class="opciones">
+      {% for t in tipos %}
+        <label class="opcion">
+          <input type="radio" name="tipo" value="{{ t.valor }}" {% if t.valor == elegido_tipo %}checked{% endif %}>
+          {% icono t.dibujo 46 t.nivel %}<span>{{ t.nombre }}</span>
+        </label>
+      {% endfor %}
+    </div>
+    {% for error in form.tipo.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
+
+    <h2 class="rotulo-seccion"><span class="paso-num">2</span> ¿Dónde lo viste?</h2>
+    <div class="opciones">
+      {% for z in zonas %}
+        <label class="opcion">
+          <input type="radio" name="zona" value="{{ z.pk }}" {% if z.pk|stringformat:"s" == elegida_zona %}checked{% endif %}>
+          {% icono "pin" 38 z.nivel %}<span>{{ z.nombre }}<br><small>{{ z.comuna }}</small></span>
+        </label>
+      {% endfor %}
+    </div>
+    {% for error in form.zona.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
+
+    <h2 class="rotulo-seccion"><span class="paso-num">3</span> ¿Quién eres?</h2>
+    <div class="campo">
+      <label for="{{ form.nombre.id_for_label }}">Tu nombre</label>
+      {{ form.nombre }}
+      {% for error in form.nombre.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
+    </div>
+    <div class="campo">
+      <label for="{{ form.texto.id_for_label }}">¿Quieres contar algo más? <small style="font-weight:600">(no es obligatorio)</small></label>
+      {{ form.texto }}
+      {% for error in form.texto.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
+    </div>
+
+    <button type="submit" class="boton-grande">{% icono "check" 28 %} Publicar comentario</button>
+  </form>
+
+  <div class="columna" id="lista">
+    <h2 class="rotulo-seccion">{% icono "globo" 26 %} Lo que avisaron otros</h2>
+    <div class="avisos">
+      {% for c in comentarios %}
+        {% include "mapa/_comentario.html" with mostrar_zona=True %}
+      {% empty %}
+        <p class="vacio">Todavía no hay comentarios. ¡Sé la primera persona en comentar!</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

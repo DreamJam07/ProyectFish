@@ -1,0 +1,118 @@
+{% extends "mapa/base.html" %}
+{% load static iconos %}
+
+{% block estilos %}<link rel="stylesheet" href="{% static 'mapa/leaflet/leaflet.css' %}">{% endblock %}
+
+{% block contenido %}
+<div class="vista-mapa">
+  <div class="arriba">
+    <form class="buscador" method="get" action="{% url 'mapa:inicio' %}">
+      <input name="q" type="text" value="{{ texto }}" aria-label="¿Dónde quieres pescar?"
+             placeholder="¿Dónde quieres pescar? Ej: Paine">
+      <button type="submit">{% icono "lupa" 24 %}<span>Buscar</span></button>
+    </form>
+
+    {% if resultado.tipo == "sin_info" %}
+      <div class="alerta" role="alert">
+        {% icono "ojo" 40 "ojo" %}
+        <span>
+          <b>Todavía no tenemos información de “{{ texto }}”.</b>
+          <p>Por ahora la aplicación solo tiene datos de <b style="display:inline; font-size:inherit">Santiago (Región Metropolitana)</b>. Pronto agregaremos más lugares.</p>
+        </span>
+      </div>
+    {% elif resultado.tipo == "comuna_sin_datos" %}
+      <div class="alerta" role="alert">
+        {% icono "pin" 40 "ojo" %}
+        <span>
+          <b>{{ texto }} es parte de Santiago, pero aún no tiene zonas revisadas.</b>
+          <p>Mira en el mapa las zonas más cercanas que sí tienen información.</p>
+        </span>
+      </div>
+    {% elif resultado.tipo == "zonas" and not zona %}
+      <p class="ayuda">{% icono "pin" 28 "marca" %}<span>Encontramos {{ resultado.zonas|length }} zonas para “{{ texto }}”. Están marcadas en el mapa: toca una.</span></p>
+    {% else %}
+      <p class="ayuda">{% icono "pin" 28 "marca" %}<span>Toca una marca de color para ver cómo está el agua en esa zona. Mueve el mapa arrastrándolo.</span></p>
+    {% endif %}
+  </div>
+
+  <div class="caja-mapa">
+    <div id="mapa" class="mapa" aria-label="Mapa de zonas de agua de Santiago"></div>
+    <p class="credito">Mapa © Esri, HERE, Garmin, © colaboradores de OpenStreetMap</p>
+    <div class="controles">
+      <button type="button" class="ctrl" id="btn-mas"><b>+</b> Acercar</button>
+      <button type="button" class="ctrl" id="btn-menos"><b>−</b> Alejar</button>
+      <button type="button" class="ctrl" id="btn-todo">Ver todo</button>
+    </div>
+    <div class="leyenda">
+      <div>{% icono "si" 34 "si" %} Se puede pescar</div>
+      <div>{% icono "ojo" 34 "ojo" %} Con cuidado: no comer lo que saques</div>
+      <div>{% icono "no" 34 "no" %} Agua contaminada: no pescar</div>
+      <div>{% icono "pin" 34 "marca" %} Aquí estás tú</div>
+    </div>
+  </div>
+
+  {% if zona %}
+    <section class="panel" id="detalle">
+      <div class="veredicto f-{{ zona.nivel }}">
+        {% icono zona.nivel 76 "fondo" zona.nivel %}
+        <span class="texto">
+          <h2>{{ zona.titulo }}</h2>
+          <p>{{ zona.nombre }}</p>
+          <p class="fecha-revision">Así estaba el agua el {{ zona.ultimo_monitoreo|date:"j \d\e F \d\e Y" }} ({{ zona.ultimo_monitoreo|hace_dias }})</p>
+        </span>
+      </div>
+
+      <ul class="lista-datos">
+        <li>{% icono "agua" 30 "marca" %}<span>{{ zona.tipo_cuerpo_agua }}</span><b>{{ zona.comuna }}</b></li>
+        <li>{% icono zona.nivel 30 zona.nivel %}<span>{{ zona.tipo_contaminacion|default:"No se detecta contaminación" }}</span></li>
+      </ul>
+      {% if zona.descripcion %}<p style="margin:12px 0 0; font-size:17px; color:var(--tinta-2)">{{ zona.descripcion }}</p>{% endif %}
+
+      {% if cercanas %}
+        <h3 class="rotulo-seccion" style="font-size:19px; margin-top:20px">{% icono "si" 26 "si" %} Mejor ve a estas zonas</h3>
+        <ul class="lista-datos" style="margin-top:0">
+          {% for z in cercanas %}
+            <li>{% icono "pin" 26 "si" %}<a href="{% url 'mapa:zona' z.pk %}#detalle">{{ z.nombre }}</a><b>a {{ z.distancia }} km</b></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <h3 class="rotulo-seccion" style="font-size:19px; margin-top:20px">{% icono "globo" 26 %} Lo que dicen otros aquí</h3>
+      <div class="avisos">
+        {% for c in comentarios %}
+          {% include "mapa/_comentario.html" %}
+        {% empty %}
+          <p class="vacio">Todavía nadie comenta sobre esta zona.</p>
+        {% endfor %}
+      </div>
+      {% if total_comentarios > 3 %}<p><a href="{% url 'mapa:comentarios' %}">Ver los {{ total_comentarios }} comentarios</a></p>{% endif %}
+
+      <a class="boton-grande" href="{% url 'mapa:comentarios' %}?zona={{ zona.pk }}">{% icono "globo" 26 %} Comentar sobre esta zona</a>
+    </section>
+  {% else %}
+    <section class="panel">
+      <h3>¿Cómo está el agua en Santiago?</h3>
+      <div class="rejilla-3">
+        <div class="ficha">{% icono "si" 40 "si" %}<span class="numero t-si">{{ cuantas.si }}</span><span class="titulo">Se puede pescar</span></div>
+        <div class="ficha">{% icono "ojo" 40 "ojo" %}<span class="numero t-ojo">{{ cuantas.ojo }}</span><span class="titulo">Con cuidado</span></div>
+        <div class="ficha">{% icono "no" 40 "no" %}<span class="numero t-no">{{ cuantas.no }}</span><span class="titulo">No pescar</span></div>
+      </div>
+      <ul class="lista-datos">
+        <li>{% icono "lupa" 30 "marca" %}<span>Escribe dónde quieres pescar, o</span></li>
+        <li>{% icono "pin" 30 "marca" %}<span>toca una marca de color en el mapa.</span></li>
+        <li>{% icono "globo" 30 "marca" %}<span>Lee lo que dicen otros y deja tu comentario.</span></li>
+      </ul>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+  {{ zonas_mapa|json_script:"datos-zonas" }}
+  {{ resaltadas|json_script:"datos-resaltadas" }}
+  {{ contorno|json_script:"datos-contorno" }}
+  {{ zona.pk|default_if_none:""|json_script:"datos-zona-actual" }}
+  {{ lugar|json_script:"datos-lugar" }}
+  <script src="{% static 'mapa/leaflet/leaflet.js' %}"></script>
+  <script src="{% static 'mapa/mapa.js' %}"></script>
+{% endblock %}

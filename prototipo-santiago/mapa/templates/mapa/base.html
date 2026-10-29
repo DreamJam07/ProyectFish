@@ -1,0 +1,59 @@
+{% load static iconos %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}ProyectFish · ¿Es seguro pescar?{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap">
+  {% block estilos %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'mapa/estilos.css' %}">
+</head>
+<body>
+  <div class="pantalla">
+    {% if vista != "lugar" %}
+      <header class="cabecera">
+        {% icono "pin" 44 "marca" %}
+        <span class="lugar">
+          <span class="rotulo">Estás en</span>
+          <span class="nombre">{{ lugar.nombre }}</span>
+        </span>
+        <a class="boton-cambiar" href="{% url 'mapa:lugar' %}">
+          {% icono "mapa" 24 %}
+          Cambiar
+        </a>
+      </header>
+    {% endif %}
+
+    {% for mensaje in messages %}
+      <div class="aviso-ok" role="status" style="margin-top:14px">{% icono "si" 36 "fondo" "si" %} <span>{{ mensaje }}</span></div>
+    {% endfor %}
+
+    {% block contenido %}{% endblock %}
+
+    <p class="pie">
+      <span class="sello">Prototipo / demo</span><br><br>
+      Esta página es un prototipo en desarrollo. Por ahora solo tiene información de
+      <b>Santiago (Región Metropolitana)</b> y los datos de las zonas son de ejemplo.
+    </p>
+
+  </div>
+
+  {% if vista != "lugar" %}
+    <nav class="navegacion" aria-label="Secciones">
+      <a class="nav-boton" href="{% url 'mapa:inicio' %}" {% if vista == "mapa" %}aria-current="page"{% endif %}>{% icono "pin" 30 %}<span>Mapa</span></a>
+      <a class="nav-boton" href="{% url 'mapa:comentarios' %}" {% if vista == "comentarios" %}aria-current="page"{% endif %}>{% icono "globo" 30 %}<span>Comentarios</span></a>
+    </nav>
+  {% endif %}
+
+  {% if elegir_lugar and vista != "lugar" %}
+    <div class="telon" id="telon">
+      {% include "mapa/_elegir_lugar.html" %}
+    </div>
+  {% endif %}
+
+  {% block scripts %}{% endblock %}
+  <script src="{% static 'mapa/app.js' %}"></script>
+</body>
+</html>

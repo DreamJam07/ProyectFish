@@ -13,7 +13,17 @@ class Zona(models.Model):
         (ESTADO_PROHIBIDA, "Prohibido pescar"),
     ]
 
+    REGION_VALPARAISO = "valparaiso"
+    REGION_METROPOLITANA = "metropolitana"
+    REGION_OHIGGINS = "ohiggins"
+    REGIONES = [
+        (REGION_VALPARAISO, "Región de Valparaíso"),
+        (REGION_METROPOLITANA, "Región Metropolitana"),
+        (REGION_OHIGGINS, "Región de O'Higgins"),
+    ]
+
     nombre = models.CharField(max_length=100)
+    region = models.CharField(max_length=20, choices=REGIONES, default=REGION_METROPOLITANA)
     comuna = models.CharField(max_length=60)
     tipo_cuerpo_agua = models.CharField("tipo de cuerpo de agua", max_length=40)
     latitud = models.FloatField()
@@ -25,6 +35,9 @@ class Zona(models.Model):
     )
     ultimo_monitoreo = models.DateField("fecha del último monitoreo")
     descripcion = models.TextField("descripción", blank=True)
+
+    # Cuánta contaminación hay: 'sano', 'medio' o 'esqueleto' (dibujo del pescadito).
+    PECES = {ESTADO_SEGURA: "sano", ESTADO_PRECAUCION: "medio", ESTADO_PROHIBIDA: "esqueleto"}
 
     # Palabras e íconos que usa el diseño para cada estado.
     NIVELES = {ESTADO_SEGURA: "si", ESTADO_PRECAUCION: "ojo", ESTADO_PROHIBIDA: "no"}
@@ -45,6 +58,10 @@ class Zona(models.Model):
     def nivel(self):
         """'si', 'ojo' o 'no': define el color y el dibujo de la zona."""
         return self.NIVELES[self.estado]
+
+    @property
+    def pez(self):
+        return self.PECES[self.estado]
 
     @property
     def titulo(self):

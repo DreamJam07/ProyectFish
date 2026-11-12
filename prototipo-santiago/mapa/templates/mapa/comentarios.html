@@ -18,14 +18,17 @@
     {% for error in form.tipo.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
 
     <h2 class="rotulo-seccion"><span class="paso-num">2</span> ¿Dónde lo viste?</h2>
-    <div class="opciones">
-      {% for z in zonas %}
-        <label class="opcion">
-          <input type="radio" name="zona" value="{{ z.pk }}" {% if z.pk|stringformat:"s" == elegida_zona %}checked{% endif %}>
-          {% icono "pin" 38 z.nivel %}<span>{{ z.nombre }}<br><small>{{ z.comuna }}</small></span>
-        </label>
-      {% endfor %}
-    </div>
+    {% for g in grupos %}
+      <h3 class="grupo-region">{{ g.nombre }}</h3>
+      <div class="opciones">
+        {% for z in g.zonas %}
+          <label class="opcion">
+            <input type="radio" name="zona" value="{{ z.pk }}" {% if z.pk|stringformat:"s" == elegida_zona %}checked{% endif %}>
+            {% icono "pin" 38 z.nivel %}<span>{{ z.nombre }}<br><small>{{ z.comuna }}</small></span>
+          </label>
+        {% endfor %}
+      </div>
+    {% endfor %}
     {% for error in form.zona.errors %}<p class="error">⚠️ {{ error }}</p>{% endfor %}
 
     <h2 class="rotulo-seccion"><span class="paso-num">3</span> ¿Quién eres?</h2>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 360 360">
+<g fill="none" stroke="#0C6873" stroke-opacity="0.13" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+<!-- olas -->
+<path d="M20 60c10-10 20-10 30 0s20 10 30 0 20-10 30 0"/>
+<path d="M230 300c10-10 20-10 30 0s20 10 30 0 20-10 30 0"/>
+<path d="M150 190c10-10 20-10 30 0s20 10 30 0"/>
+<!-- pez -->
+<g transform="translate(205 60)"><path d="M0 14c8-14 26-14 36 0-10 14-28 14-36 0z"/><path d="M36 14l12-9v18z"/><circle cx="9" cy="11" r="1.6"/></g>
+<g transform="translate(40 240) scale(.8)"><path d="M0 14c8-14 26-14 36 0-10 14-28 14-36 0z"/><path d="M36 14l12-9v18z"/><circle cx="9" cy="11" r="1.6"/></g>
+<!-- esqueleto de pez -->
+<g transform="translate(250 140)"><path d="M6 14h30M12 14l-3-7M12 14l-3 7M19 14l-3-8M19 14l-3 8M26 14l-3-7M26 14l-3 7M36 14l10-7M36 14l10 7"/><path d="M0 14c0-6 7-9 12-6"/></g>
+<!-- anzuelo -->
+<g transform="translate(80 120)"><path d="M12 0v28c0 8 12 8 12-2v-6"/><path d="M19 15l5 5 5-5"/><circle cx="12" cy="-4" r="3"/></g>
+<!-- boya -->
+<g transform="translate(300 20)"><circle cx="14" cy="14" r="12"/><path d="M2 14h24M14 2v-8"/></g>
+<!-- ancla -->
+<g transform="translate(150 280)"><circle cx="14" cy="4" r="4"/><path d="M14 8v28M4 18h20M0 28c2 8 8 10 14 10s12-2 14-10"/></g>
+<!-- bote -->
+<g transform="translate(20 160)"><path d="M0 22h48l-8 12H8z"/><path d="M24 22V0M24 3l16 10H24"/></g>
+</g></svg>

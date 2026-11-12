@@ -2,29 +2,16 @@ from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
-from .busqueda import (
-    CENTRO_SANTIAGO, CONTORNO_SANTIAGO, buscar, dentro_de_santiago, lugares,
-    ordenar_por_cercania, zonas_seguras_cercanas,
-)
+from .busqueda import CONTORNOS, REGIONES, TEXTO_REGIONES, buscar, zonas_seguras_cercanas
 from .forms import ComentarioForm
+from .templatetags.iconos import PECES
 from .models import Comentario, Zona
 
-
-def lugar_actual(request):
-    """El lugar que eligió la persona (se guarda en la sesión). Si no eligió, todo Santiago."""
-    return request.session.get("lugar") or CENTRO_SANTIAGO
-
-
-def contexto_base(request, vista):
-    return {
-        "vista": vista,
-        "lugar": lugar_actual(request),
-        "elegir_lugar": "lugar" not in request.session,
-    }
+ORDEN_REGIONES = ["valparaiso", "metropolitana", "ohiggins"]
 
 
 def inicio(request, zona_id=None):
-    """Pantalla del mapa (funcionalidad corazón): mapa de Santiago y detalle de la zona elegida."""
+    """Pantalla del mapa (funcionalidad corazón): mapa de las tres regiones y detalle de la zona."""
     zonas = list(Zona.objects.all())
     texto = request.GET.get("q", "").strip()
     resultado = buscar(texto, zonas)
@@ -36,16 +23,18 @@ def inicio(request, zona_id=None):
         # Si la búsqueda encontró una sola zona, la mostramos directamente.
         zona = resultado["zonas"][0]
 
-    contexto = contexto_base(request, "mapa")
-    contexto.update({
+    contexto = {
+        "vista": "mapa",
         "texto": texto,
         "resultado": resultado,
+        "region_buscada": REGIONES.get(resultado.get("region")),
         "zona": zona,
         "zonas_mapa": [
             {
                 "id": z.pk,
                 "nombre": z.nombre,
                 "comuna": z.comuna,
+                "region": z.region,
                 "lat": z.latitud,
                 "lng": z.longitud,
                 "nivel": z.nivel,
@@ -55,13 +44,20 @@ def inicio(request, zona_id=None):
             for z in zonas
         ],
         "resaltadas": [z.pk for z in resultado["zonas"]],
-        "contorno": CONTORNO_SANTIAGO,
+        "contornos": CONTORNOS,
+        "peces": PECES,
+        "regiones": [
+            {"clave": clave, "nombre": REGIONES[clave],
+             "zonas": sum(z.region == clave for z in zonas)}
+            for clave in ORDEN_REGIONES
+        ],
+        "texto_regiones": TEXTO_REGIONES,
         "cuantas": {
             "si": sum(z.nivel == "si" for z in zonas),
             "ojo": sum(z.nivel == "ojo" for z in zonas),
             "no": sum(z.nivel == "no" for z in zonas),
         },
-    })
+    }
     if zona:
         contexto["comentarios"] = zona.comentarios.all()[:3]
         contexto["total_comentarios"] = zona.comentarios.count()
@@ -81,62 +77,22 @@ def comentarios(request):
     else:
         form = ComentarioForm(initial={"zona": request.GET.get("zona")})
 
-    contexto = contexto_base(request, "comentarios")
-    contexto.update({
+    zonas = list(Zona.objects.all())
+    grupos = [
+        {"nombre": REGIONES[clave], "zonas": [z for z in zonas if z.region == clave]}
+        for clave in ORDEN_REGIONES
+    ]
+    contexto = {
+        "vista": "comentarios",
         "form": form,
         "tipos": [
             {"valor": valor, "nombre": nombre, "dibujo": Comentario.DIBUJOS[valor][0],
              "nivel": Comentario.DIBUJOS[valor][1]}
             for valor, nombre in Comentario.TIPOS
         ],
-        "zonas": ordenar_por_cercania(list(Zona.objects.all()), contexto["lugar"]),
+        "grupos": grupos,
         "elegido_tipo": form["tipo"].value() or "",
         "elegida_zona": str(form["zona"].value() or ""),
         "comentarios": Comentario.objects.select_related("zona")[:30],
-    })
+    }
     return render(request, "mapa/comentarios.html", contexto)
-
-
-def lugar(request):
-    """Elegir dónde está la persona: con el GPS, tocando su comuna o escribiendo un lugar."""
-    todas = list(Zona.objects.all())
-    comunas = lugares(todas)
-    aviso = None
-    texto = ""
-
-    if request.method == "POST":
-        if request.POST.get("todo"):
-            return guardar_lugar(request, CENTRO_SANTIAGO)
-        if request.POST.get("comuna"):
-            for c in comunas:
-                if c["nombre"] == request.POST["comuna"]:
-                    return guardar_lugar(request, c)
-        if request.POST.get("lat") and request.POST.get("lon"):
-            try:
-                lat, lon = float(request.POST["lat"]), float(request.POST["lon"])
-            except ValueError:
-                lat = lon = None
-            if lat is not None and dentro_de_santiago(lat, lon):
-                return guardar_lugar(request, {"nombre": "Donde estás ahora", "lat": lat, "lon": lon})
-            aviso = {"tipo": "fuera_gps"}
-    else:
-        texto = request.GET.get("q", "").strip()
-        resultado = buscar(texto, todas)
-        if resultado["tipo"] == "santiago":
-            return guardar_lugar(request, CENTRO_SANTIAGO)
-        if resultado["tipo"] == "zonas":
-            nombres = {z.comuna for z in resultado["zonas"]}
-            if len(nombres) == 1:
-                comuna = nombres.pop()
-                return guardar_lugar(request, next(c for c in comunas if c["nombre"] == comuna))
-        if resultado["tipo"] in ("sin_info", "comuna_sin_datos"):
-            aviso = {"tipo": resultado["tipo"]}
-
-    contexto = contexto_base(request, "lugar")
-    contexto.update({"comunas": comunas, "aviso": aviso, "texto": texto})
-    return render(request, "mapa/lugar.html", contexto)
-
-
-def guardar_lugar(request, datos):
-    request.session["lugar"] = {"nombre": datos["nombre"], "lat": datos["lat"], "lon": datos["lon"]}
-    return redirect("mapa:inicio")

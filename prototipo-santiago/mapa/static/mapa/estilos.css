@@ -142,20 +142,35 @@ a{color:var(--marca)}
 /* marcas sobre el mapa (Leaflet) */
 .leaflet-container{font:inherit; background:var(--superficie-2)}
 .insignia-zona{
-  width:40px !important; height:40px !important; margin:-20px 0 0 -20px !important;
-  border-radius:50%; border:4px solid #fff; display:grid; place-items:center;
+  width:auto !important; height:auto !important; background:none !important; border:0 !important;
+  transform:translate(-50%,-50%); margin:0 !important;
+}
+.pez-marca{
+  position:relative; display:inline-grid; place-items:center; background:#fff;
+  border:4px solid var(--linea-fuerte); border-radius:18px; padding:5px 6px;
   box-shadow:0 3px 9px rgba(0,0,0,.4);
 }
-.insignia-zona.elegida{width:56px !important; height:56px !important; margin:-28px 0 0 -28px !important; border-width:5px}
-.insignia-zona.resaltada{outline:4px solid var(--marca); outline-offset:3px}
-.i-z-si{background:var(--si)} .i-z-ojo{background:var(--ojo)} .i-z-no{background:var(--no)}
+.pez-marca > svg:first-child{display:block}
+.pez-marca .simbolo{
+  position:absolute; right:-10px; top:-12px; width:22px; height:22px; padding:3px; box-sizing:content-box;
+  border-radius:50%; border:3px solid #fff;
+}
+.i-z-si .pez-marca{border-color:var(--si)} .i-z-si .simbolo{background:var(--si)}
+.i-z-ojo .pez-marca{border-color:var(--ojo)} .i-z-ojo .simbolo{background:var(--ojo)}
+.i-z-no .pez-marca{border-color:var(--no)} .i-z-no .simbolo{background:var(--no)}
+.pez-marca{transition:transform .15s}
+.zoom-lejos .insignia-zona:not(.elegida) .pez-marca{transform:scale(.55)}
+.zoom-medio .insignia-zona:not(.elegida) .pez-marca{transform:scale(.78)}
+.insignia-zona.elegida .pez-marca{border-width:6px; padding:6px 8px}
+.insignia-zona.elegida{z-index:1000 !important}
+.insignia-zona.resaltada .pez-marca{outline:4px solid var(--marca); outline-offset:3px}
 .pastilla{
   display:inline-block; transform:translate(-50%,-100%); padding:6px 12px; border-radius:999px;
   background:var(--tinta); color:var(--fondo); border:3px solid var(--superficie);
   box-shadow:0 3px 10px rgba(0,0,0,.35); white-space:nowrap;
   font-family:Archivo,sans-serif; font-weight:800; font-size:16px;
 }
-.icono-pastilla{width:0 !important; height:0 !important; margin:-38px 0 0 0 !important}
+.icono-pastilla{width:0 !important; height:0 !important; margin:-66px 0 0 0 !important}
 .pin-yo{display:flex; flex-direction:column; align-items:center; transform:translate(-50%,-100%)}
 .icono-yo{width:0 !important; height:0 !important}
 .pin-yo .globo{
@@ -308,7 +323,7 @@ a{color:var(--marca)}
     grid-template-columns:repeat(2,minmax(0,190px)); justify-content:center;
   }
   .nav-boton{flex-direction:row; justify-content:center; gap:9px; font-size:17px; padding:12px 10px}
-  .pantalla{max-width:1180px; padding:96px 24px 48px}
+  .pantalla{max-width:1180px; padding:12px 24px 48px}
   .mapa{height:600px}
 
   .vista-mapa{display:grid; grid-template-columns:minmax(0,1fr) 400px; gap:20px; align-items:start}
@@ -321,4 +336,68 @@ a{color:var(--marca)}
   .vista-comentarios > .columna{grid-column:2}
   .vista-comentarios > .columna .rotulo-seccion:first-child{margin-top:0}
   .vista-comentarios > form > .rotulo-seccion:first-child{margin-top:0}
+}
+
+/* ---------- fondo de pesca, portada y entrada ---------- */
+body{
+  background-color:var(--fondo);
+  background-image:url("fondo-pesca.svg");
+  background-size:360px 360px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) body{background-image:url("fondo-pesca-oscuro.svg")}
+}
+:root[data-theme="dark"] body{background-image:url("fondo-pesca-oscuro.svg")}
+
+.portada{
+  position:relative; text-align:center; color:#fff; padding:22px 16px 54px;
+  background:linear-gradient(180deg,#0A4F5A 0%,#0C6873 55%,#2A8F9B 100%);
+}
+.portada .marca{
+  display:inline-flex; align-items:center; gap:12px; color:#fff; text-decoration:none;
+  font-family:Archivo,sans-serif; font-weight:900; font-size:clamp(30px,8vw,46px); letter-spacing:-.03em;
+}
+.portada p{margin:4px auto 0; max-width:26em; font-size:19px; font-weight:600; opacity:.95}
+.portada .olas{position:absolute; left:0; bottom:-1px; width:100%; height:34px}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .portada{background:linear-gradient(180deg,#041217 0%,#08303A 60%,#0E4A57 100%)}
+}
+:root[data-theme="dark"] .portada{background:linear-gradient(180deg,#041217 0%,#08303A 60%,#0E4A57 100%)}
+
+.entrada{
+  background:var(--superficie); border:2px solid var(--linea); border-radius:20px;
+  padding:18px 16px 6px; box-shadow:var(--sombra);
+}
+.entrada h1{font-size:clamp(26px,6vw,34px); font-weight:900; text-align:center; margin-bottom:14px}
+.regiones{display:grid; gap:10px}
+.region-boton{
+  display:flex; align-items:center; gap:14px; text-align:left; width:100%;
+  background:var(--marca-suave); border:3px solid var(--linea-fuerte); border-radius:18px; padding:14px 16px;
+  font-family:Archivo,sans-serif; font-weight:800; font-size:21px; box-shadow:var(--sombra);
+}
+.region-boton svg{flex:none}
+.region-boton small{display:block; font-family:"Source Sans 3",sans-serif; font-weight:600; font-size:16px; color:var(--tinta-2)}
+.region-boton:active{border-color:var(--marca)}
+.entrada .buscador{margin:14px 0 12px}
+.arriba > .ayuda, .arriba > .alerta{margin-top:12px}
+
+/* ---------- pescadito ---------- */
+.pez-insignia{
+  flex:none; background:#fff; border-radius:20px; padding:8px 10px; display:grid; place-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+.veredicto .pez-insignia svg{display:block}
+.leyenda div{justify-content:flex-start}
+.leyenda div > svg{flex:none; background:var(--marca-suave); border-radius:12px; padding:4px 6px; box-sizing:content-box}
+.leyenda div > span{display:flex; align-items:center; gap:8px}
+.ficha > svg{margin-bottom:2px}
+.grupo-region{
+  font-family:Archivo,sans-serif; font-size:17px; font-weight:800; color:var(--tinta-2);
+  margin:18px 0 8px; text-transform:uppercase; letter-spacing:.06em;
+}
+.cabecera{display:none}
+
+@media (min-width:920px){
+  .regiones{grid-template-columns:repeat(3,1fr)}
+  .portada{padding-top:76px}
 }

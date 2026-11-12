@@ -70,3 +70,61 @@ def hace_dias(fecha):
     if dias == 1:
         return "ayer"
     return f"hace {dias} días"
+
+
+# ---------- Pescadito: cuánta contaminación hay ----------
+_PEZ_CUERPO = (
+    '<path d="M6 16c5-9 18-10 27-1 6-2 12-1 15 3-3 4-9 5-15 3-9 8-22 7-27-2z" '
+    'fill="#4FB3D9" stroke="#1B6E94" stroke-width="1.6" stroke-linejoin="round"/>'
+    '<path d="M40 14l9-6v9z" fill="#2E94BD" stroke="#1B6E94" stroke-width="1.4" stroke-linejoin="round"/>'
+    '<path d="M24 14c3-5 8-6 11-4-1 3-5 5-9 5z" fill="#2E94BD"/>'
+    '<path d="M13 18c3 4 8 6 15 6-3 2-9 2-15-1z" fill="#CDEBF5"/>'
+    '<path d="M14 11.5c-1.2 3-1.2 7 0 10" fill="none" stroke="#1B6E94" stroke-width="1.4" stroke-linecap="round"/>'
+    '<circle cx="10" cy="15" r="2.4" fill="#fff"/><circle cx="9.6" cy="15" r="1.2" fill="#0A1F27"/>'
+)
+_PEZ_HUESOS = (
+    '<g fill="none" stroke="#5A6B73" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+    '<path d="M16 17h26"/>'
+    '<path d="M20 17c-1-5 0-8 1-9M20 17c-1 5 0 8 1 9"/>'
+    '<path d="M25 17c-1-6 0-9 1-10M25 17c-1 6 0 9 1 10"/>'
+    '<path d="M30 17c-1-6 0-8 1-9M30 17c-1 6 0 8 1 9"/>'
+    '<path d="M35 17c-1-4 0-6 1-7M35 17c-1 4 0 6 1 7"/>'
+    '<path d="M42 17l8-6M42 17l8 6M44 17h6"/></g>'
+    '<path d="M5 15c0-4 5-7 10-5 2 1 3 4 3 6s-1 5-3 6c-5 2-10-1-10-5z" fill="#fff" stroke="#5A6B73" stroke-width="2"/>'
+    '<circle cx="10" cy="14.5" r="2.6" fill="#5A6B73"/><circle cx="10.3" cy="14.2" r=".8" fill="#fff"/>'
+    '<path d="M6 19l7 1" stroke="#5A6B73" stroke-width="1.6" stroke-linecap="round"/>'
+)
+
+PECES = {
+    "sano": _PEZ_CUERPO,
+    "esqueleto": _PEZ_HUESOS,
+    # Mitad con carne (la cabeza) y mitad con huesos (la cola).
+    "medio": (
+        '<defs><clipPath id="pez-carne"><rect x="0" y="0" width="27" height="34"/></clipPath>'
+        '<clipPath id="pez-huesos"><rect x="27" y="0" width="30" height="34"/></clipPath></defs>'
+        f'<g clip-path="url(#pez-carne)">{_PEZ_CUERPO}</g>'
+        f'<g clip-path="url(#pez-huesos)">{_PEZ_HUESOS}</g>'
+    ),
+}
+
+NOMBRES_PEZ = {
+    "sano": "Pescado sano: agua limpia",
+    "medio": "Pescado a medias: contaminación media",
+    "esqueleto": "Esqueleto de pescado: agua muy contaminada",
+}
+
+
+@register.simple_tag
+def pescadito(estado, ancho=120):
+    """Dibujo del pescadito según la contaminación: 'sano', 'medio' o 'esqueleto'."""
+    alto = round(ancho * 34 / 56)
+    return mark_safe(
+        f'<svg width="{ancho}" height="{alto}" viewBox="0 0 56 34" role="img" '
+        f'aria-label="{NOMBRES_PEZ[estado]}">{PECES[estado]}</svg>'
+    )
+
+
+@register.simple_tag
+def pescadito_logo():
+    """Pez del logo (el mismo pescadito sano, solo el dibujo interior)."""
+    return mark_safe(_PEZ_CUERPO)

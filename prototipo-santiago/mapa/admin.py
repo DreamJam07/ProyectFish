@@ -5,8 +5,8 @@ from .models import Comentario, Zona
 
 @admin.register(Zona)
 class ZonaAdmin(admin.ModelAdmin):
-    list_display = ["nombre", "comuna", "estado", "tipo_contaminacion", "ultimo_monitoreo"]
-    list_filter = ["estado", "comuna"]
+    list_display = ["nombre", "region", "comuna", "estado", "tipo_contaminacion", "ultimo_monitoreo"]
+    list_filter = ["region", "estado", "comuna"]
     search_fields = ["nombre", "comuna"]
 
 
